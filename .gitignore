@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+*.lock
+pnpm-lock.yaml
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime
+.cache/
+tmp/
+temp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+# Docker
+.dockerignore
+
+# Testing
+coverage/
+.nyc_output/
+
+# Config
+config/local.js
+config/development.js
