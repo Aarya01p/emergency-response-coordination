@@ -1,0 +1,12 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY ai-engine/package*.json ./
+
+RUN npm install
+
+COPY ai-engine/tsconfig.json .
+COPY ai-engine/src ./src
+
+CMD ["npm", "run", "dev"]
