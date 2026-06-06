@@ -4,6 +4,8 @@
   "description": "Frontend dashboard for Emergency Response Coordination Platform",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.0",
@@ -23,8 +25,6 @@
     "classnames": "^2.3.2"
   },
   "devDependencies": {
-    "@emotion/react": "^11.11.0",
-    "@emotion/styled": "^11.11.0",
     "react-scripts": "5.0.1",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
