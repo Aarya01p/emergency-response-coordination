@@ -6,19 +6,19 @@ import { api } from '../services/api';
 
 const validationSchema = yup.object({
   title: yup
-    .string('Enter incident title')
+    .string()
     .required('Title is required'),
   description: yup
-    .string('Enter incident description')
+    .string()
     .required('Description is required'),
   type: yup
-    .string('Select incident type')
+    .string()
     .required('Type is required'),
   severity: yup
-    .string('Select severity')
+    .string()
     .required('Severity is required'),
   location: yup
-    .string('Enter location')
+    .string()
     .required('Location is required'),
 });
 
