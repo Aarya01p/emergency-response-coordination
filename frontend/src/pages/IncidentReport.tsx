@@ -5,12 +5,14 @@ import * as yup from 'yup';
 import { api } from '../services/api';
 
 const validationSchema = yup.object({
-  title: yup
-    .string()
-    .required('Title is required'),
-  description: yup
-    .string()
-    .required('Description is required'),
+  const validationSchema = yup.object({
+  email: yup
+    .string() 
+    .email('Enter a valid email')
+    .required('Email is required'),
+  password: yup
+    .string() 
+    .required('Password is required'),
   type: yup
     .string()
     .required('Type is required'),
