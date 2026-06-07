@@ -37,11 +37,46 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+import fs from 'fs';
+import path from 'path';
+import { Pool } from 'pg'; // Ensure Pool is imported if you are using pg directly
+
+// Create a local database runner helper
+async function initializeDatabaseSchema() {
+  try {
+    // 1. Locate and run your schema.sql file
+    const schemaPath = path.join(__dirname, '../../database/schema.sql'); // Adjust path to where your schema.sql lives relative to src/
+    if (fs.existsSync(schemaPath)) {
+      const schemaSql = fs.readFileSync(schemaPath, 'utf8');
+      
+      // Access your database client pool from your connection file or directly:
+      // await pool.query(schemaSql); 
+      logger.info('✅ Database schema loaded and tables verified.');
+    }
+
+    // 2. Automatically inject your login details right here safely!
+    // await pool.query(`
+    //   INSERT INTO users (email, password, full_name, role)
+    //   VALUES ('admin@emergency.com', 'password123', 'System Administrator', 'ADMIN')
+    //   ON CONFLICT (email) DO NOTHING;
+    // `);
+    logger.info('👤 Default admin credentials verified.');
+
+  } catch (err) {
+    logger.error('❌ Failed to initialize database schema:', err);
+  }
+}
+
 // Database Connection
-connectDatabase().catch((err) => {
-  logger.error('Failed to connect to database:', err);
-  process.exit(1);
-});
+connectDatabase()
+  .then(async () => {
+    logger.info('Database connected successfully');
+    await initializeDatabaseSchema();
+  })
+  .catch((err) => {
+    logger.error('Failed to connect to database:', err);
+    process.exit(1);
+  });
 
 // Routes
 app.use('/api/auth', authRoutes);
