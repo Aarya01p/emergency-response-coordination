@@ -54,12 +54,17 @@ async function initializeDatabaseSchema() {
       logger.info('✅ Database schema loaded and tables verified.');
     }
 
-    // 2. Automatically inject your login details right here safely!
-    // await pool.query(`
-    //   INSERT INTO users (email, password, full_name, role)
-    //   VALUES ('admin@emergency.com', 'password123', 'System Administrator', 'ADMIN')
-    //   ON CONFLICT (email) DO NOTHING;
-    // `);
+  // 2. Automatically inject your login details right here safely!
+    const userCheck = await pool.query("SELECT * FROM users WHERE email = 'admin@emergency.com'");
+    if (userCheck.rows.length === 0) {
+      await pool.query(`
+        INSERT INTO users (email, password, full_name, role)
+        VALUES ('admin@emergency.com', 'password123', 'System Administrator', 'ADMIN')
+      `);
+      logger.info('👤 Default admin credentials created successfully!');
+    } else {
+      logger.info('👤 Default admin credentials already verified.');
+    }
     logger.info('👤 Default admin credentials verified.');
 
   } catch (err) {
