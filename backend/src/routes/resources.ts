@@ -7,7 +7,7 @@ const router = Router();
 const logger = new Logger('Resources');
 
 // GET all resources
-router.get('/', authenticateToken, async (req: Request, res: Response) => {
+router.get('/',  async (req: Request, res: Response) => {
   try {
     const result = await query('SELECT * FROM resources ORDER BY created_at DESC');
     res.json({ resources: result.rows });
@@ -18,7 +18,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 });
 
 // CREATE resource
-router.post('/', authenticateToken, async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const { name, type, status, location, latitude, longitude } = req.body;
 
