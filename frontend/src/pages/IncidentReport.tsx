@@ -13,17 +13,11 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { api } from '../services/api';
 
-// 1. Fixed Validation Schema: Removed hidden fields that were blocking the form!
+// Validation Schema
 const validationSchema = yup.object({
-  title: yup
-    .string()
-    .required('Incident Title is required'),
-  description: yup
-    .string()
-    .required('Description is required'),
-  location: yup
-    .string()
-    .required('Location is required'),
+  title: yup.string().required('Incident Title is required'),
+  description: yup.string().required('Description is required'),
+  location: yup.string().required('Location is required'),
 });
 
 const IncidentReport: React.FC = () => {
@@ -40,23 +34,28 @@ const IncidentReport: React.FC = () => {
       latitude: '',
       longitude: '',
     },
-    validationSchema: validationSchema,
+
+    validationSchema,
+
     onSubmit: async (values) => {
       try {
         setSubmitMessage(null);
-        // 2. Pointing to your automated AI processing backend route!
-        const response = await api.post('/incidents', values);
-        
+
+        // ✅ ONLY BACKEND CALL (NO AI)
+        await api.post('/incidents', values);
+
         setSubmitMessage({
           type: 'success',
-          text: `Incident reported successfully! AI categorized this as a ${response.data.aiData?.category || 'reported'} event.`,
+          text: 'Incident reported successfully!'
         });
+
         formik.resetForm();
       } catch (err) {
         console.error('API submission failed:', err);
+
         setSubmitMessage({
           type: 'error',
-          text: 'Failed to connect to the AI engine backend. Please verify your Render server is up.',
+          text: 'Failed to report incident. Please try again.'
         });
       }
     },
@@ -65,6 +64,7 @@ const IncidentReport: React.FC = () => {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Paper sx={{ p: 4 }}>
+
         <h2>🚨 Report New Emergency Incident</h2>
 
         {submitMessage && (
@@ -75,12 +75,14 @@ const IncidentReport: React.FC = () => {
 
         <Box component="form" onSubmit={formik.handleSubmit} noValidate>
           <Grid container spacing={2}>
+
+            {/* Title */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 id="title"
                 name="title"
-                label="Incident Title (e.g., Fire in North Warehouse)"
+                label="Incident Title"
                 value={formik.values.title}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -89,12 +91,13 @@ const IncidentReport: React.FC = () => {
               />
             </Grid>
 
+            {/* Description */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 id="description"
                 name="description"
-                label="What is happening? Describe the situation (AI will automatically analyze type and severity)"
+                label="Describe the situation"
                 multiline
                 rows={5}
                 value={formik.values.description}
@@ -105,6 +108,7 @@ const IncidentReport: React.FC = () => {
               />
             </Grid>
 
+            {/* Location */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -119,6 +123,7 @@ const IncidentReport: React.FC = () => {
               />
             </Grid>
 
+            {/* Latitude */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -131,6 +136,7 @@ const IncidentReport: React.FC = () => {
               />
             </Grid>
 
+            {/* Longitude */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -143,6 +149,7 @@ const IncidentReport: React.FC = () => {
               />
             </Grid>
 
+            {/* Submit Button */}
             <Grid item xs={12}>
               <Button
                 color="error"
@@ -152,9 +159,10 @@ const IncidentReport: React.FC = () => {
                 size="large"
                 sx={{ mt: 2, fontWeight: 'bold' }}
               >
-                Send Incident to AI Dispatcher
+                Submit Incident
               </Button>
             </Grid>
+
           </Grid>
         </Box>
       </Paper>
