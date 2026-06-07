@@ -45,7 +45,7 @@ const IncidentReport: React.FC = () => {
       try {
         setSubmitMessage(null);
         // 2. Pointing to your automated AI processing backend route!
-        const response = await api.post('/incidents/report', values);
+        const response = await api.post('/incidents', values);
         
         setSubmitMessage({
           type: 'success',
