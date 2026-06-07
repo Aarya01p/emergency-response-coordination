@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 
 -- Incidents Table
 CREATE TABLE IF NOT EXISTS incidents (
@@ -34,10 +34,10 @@ CREATE TABLE IF NOT EXISTS incidents (
   closed_at TIMESTAMP
 );
 
-CREATE INDEX idx_incidents_status ON incidents(status);
-CREATE INDEX idx_incidents_severity ON incidents(severity);
-CREATE INDEX idx_incidents_created_by ON incidents(created_by);
-CREATE INDEX idx_incidents_created_at ON incidents(created_at);
+CREATE INDEX IF NOT EXISTS idx_incidents_status ON incidents(status);
+CREATE INDEX IF NOT EXISTS idx_incidents_severity ON incidents(severity);
+CREATE INDEX IF NOT EXISTS idx_incidents_created_by ON incidents(created_by);
+CREATE INDEX IF NOT EXISTS idx_incidents_created_at ON incidents(created_at);
 
 -- Resources Table
 CREATE TABLE IF NOT EXISTS resources (
@@ -56,9 +56,9 @@ CREATE TABLE IF NOT EXISTS resources (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_resources_status ON resources(status);
-CREATE INDEX idx_resources_type ON resources(type);
-CREATE INDEX idx_resources_assigned_incident ON resources(assigned_to_incident);
+CREATE INDEX IF NOT EXISTS idx_resources_status ON resources(status);
+CREATE INDEX IF NOT EXISTS idx_resources_type ON resources(type);
+CREATE INDEX IF NOT EXISTS idx_resources_assigned_incident ON resources(assigned_to_incident);
 
 -- Alerts Table
 CREATE TABLE IF NOT EXISTS alerts (
@@ -73,8 +73,8 @@ CREATE TABLE IF NOT EXISTS alerts (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_alerts_incident_id ON alerts(incident_id);
-CREATE INDEX idx_alerts_created_at ON alerts(created_at);
+CREATE INDEX IF NOT EXISTS idx_alerts_incident_id ON alerts(incident_id);
+CREATE INDEX IF NOT EXISTS idx_alerts_created_at ON alerts(created_at);
 
 -- Response Teams Table
 CREATE TABLE IF NOT EXISTS response_teams (
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS response_teams (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_response_teams_status ON response_teams(status);
+CREATE INDEX IF NOT EXISTS idx_response_teams_status ON response_teams(status);
 
 -- Team Members Table
 CREATE TABLE IF NOT EXISTS team_members (
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS incident_history (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_incident_history_incident_id ON incident_history(incident_id);
+CREATE INDEX IF NOT EXISTS idx_incident_history_incident_id ON incident_history(incident_id);
 
 -- AI Categorization Results Table
 CREATE TABLE IF NOT EXISTS ai_categorizations (
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS ai_categorizations (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_ai_categorizations_incident_id ON ai_categorizations(incident_id);
+CREATE INDEX IF NOT EXISTS idx_ai_categorizations_incident_id ON ai_categorizations(incident_id);
 
 -- Create Audit Log Table
 CREATE TABLE IF NOT EXISTS audit_logs (
@@ -137,5 +137,5 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_audit_logs_user_id ON audit_logs(user_id);
-CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at);
