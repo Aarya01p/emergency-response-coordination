@@ -42,12 +42,23 @@ const IncidentReport: React.FC = () => {
         setSubmitMessage(null);
         
 onSubmit: async (values) => {
-  setSubmitMessage({
-    type: 'success',
-    text: 'Incident reported successfully!'
-  });
+  try {
+    setSubmitMessage(null);
 
-  formik.resetForm();
+    await api.post('/incidents', values);
+
+    setSubmitMessage({
+      type: 'success',
+      text: 'Incident reported successfully!'
+    });
+
+    formik.resetForm();
+  } catch (err) {
+    setSubmitMessage({
+      type: 'error',
+      text: 'Failed to submit incident'
+    });
+  }
 }
       } catch (err) {
         console.error('API submission failed:', err);
