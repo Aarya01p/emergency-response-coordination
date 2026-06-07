@@ -9,15 +9,13 @@ import { api } from '../services/api';
 
 const validationSchema = yup.object({
   email: yup
-    .string('Enter your email')
+    .string() 
     .email('Enter a valid email')
     .required('Email is required'),
   password: yup
-    .string('Enter your password')
-    .min(6, 'Password should be of minimum 6 characters length')
+    .string() 
     .required('Password is required'),
 });
-
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
