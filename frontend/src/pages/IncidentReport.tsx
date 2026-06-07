@@ -40,32 +40,21 @@ const IncidentReport: React.FC = () => {
     onSubmit: async (values) => {
       try {
         setSubmitMessage(null);
-        
-onSubmit: async (values) => {
-  try {
-    setSubmitMessage(null);
 
-    await api.post('/incidents', values);
+        await api.post('/incidents', values);
 
-    setSubmitMessage({
-      type: 'success',
-      text: 'Incident reported successfully!'
-    });
+        setSubmitMessage({
+          type: 'success',
+          text: 'Incident reported successfully!'
+        });
 
-    formik.resetForm();
-  } catch (err) {
-    setSubmitMessage({
-      type: 'error',
-      text: 'Failed to submit incident'
-    });
-  }
-}
+        formik.resetForm();
       } catch (err) {
         console.error('API submission failed:', err);
 
         setSubmitMessage({
           type: 'error',
-          text: 'Failed to report incident. Please try again.'
+          text: 'Failed to submit incident'
         });
       }
     },
@@ -86,11 +75,9 @@ onSubmit: async (values) => {
         <Box component="form" onSubmit={formik.handleSubmit} noValidate>
           <Grid container spacing={2}>
 
-            {/* Title */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                id="title"
                 name="title"
                 label="Incident Title"
                 value={formik.values.title}
@@ -101,11 +88,9 @@ onSubmit: async (values) => {
               />
             </Grid>
 
-            {/* Description */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                id="description"
                 name="description"
                 label="Describe the situation"
                 multiline
@@ -118,11 +103,9 @@ onSubmit: async (values) => {
               />
             </Grid>
 
-            {/* Location */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                id="location"
                 name="location"
                 label="Location Address"
                 value={formik.values.location}
@@ -133,11 +116,9 @@ onSubmit: async (values) => {
               />
             </Grid>
 
-            {/* Latitude */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                id="latitude"
                 name="latitude"
                 label="Latitude (Optional)"
                 type="number"
@@ -146,11 +127,9 @@ onSubmit: async (values) => {
               />
             </Grid>
 
-            {/* Longitude */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                id="longitude"
                 name="longitude"
                 label="Longitude (Optional)"
                 type="number"
@@ -159,7 +138,6 @@ onSubmit: async (values) => {
               />
             </Grid>
 
-            {/* Submit Button */}
             <Grid item xs={12}>
               <Button
                 color="error"
@@ -175,6 +153,7 @@ onSubmit: async (values) => {
 
           </Grid>
         </Box>
+
       </Paper>
     </Container>
   );
