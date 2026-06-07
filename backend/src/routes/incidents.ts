@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { Logger } from '../utils/logger';
 import { query } from '../database/connection';
+import { analyzeIncidentText } from '../services/aiService'; // Import your Gemini AI Service
 
 const router = Router();
 const logger = new Logger('Incidents');
@@ -11,7 +12,6 @@ router.get('/', async (req: Request, res: Response) => {
     const result = await query(
       'SELECT * FROM incidents ORDER BY created_at DESC LIMIT 100'
     );
-
     res.json({ incidents: result.rows });
   } catch (err) {
     logger.error('Failed to fetch incidents', err);
@@ -23,16 +23,10 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-
-    const result = await query(
-      'SELECT * FROM incidents WHERE id = $1',
-      [id]
-    );
-
+    const result = await query('SELECT * FROM incidents WHERE id = $1', [id]);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Incident not found' });
     }
-
     res.json({ incident: result.rows[0] });
   } catch (err) {
     logger.error('Failed to fetch incident', err);
@@ -40,19 +34,25 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
-// CREATE new incident
+// CREATE new incident with AI Categorization!
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const {
-      title,
-      description,
-      location,
-      severity,
-      type,
-      latitude,
-      longitude
-    } = req.body;
+    const { title, description, location, latitude, longitude } = req.body;
 
+    if (!description) {
+      return res.status(400).json({ error: 'Description is required' });
+    }
+
+    logger.info('Processing incident description with Gemini AI Engine...');
+    
+    // 1. Run the user's text description through the AI engine
+    const aiAnalysis = await analyzeIncidentText(description);
+    
+    // Use AI parsed parameters, or fall back if unknown
+    const computedSeverity = aiAnalysis.severity || 'MEDIUM';
+    const computedType = aiAnalysis.category || 'UNKNOWN';
+
+    // 2. Save the incident along with the AI tags directly to PostgreSQL
     const result = await query(
       `INSERT INTO incidents
       (
@@ -72,25 +72,27 @@ router.post('/', async (req: Request, res: Response) => {
       )
       RETURNING *`,
       [
-        title,
+        title || aiAnalysis.summary || 'AI Dispatched Incident',
         description,
         location,
-        severity,
-        type,
-        latitude,
-        longitude
+        computedSeverity,
+        computedType,
+        latitude ? parseFloat(latitude) : null,
+        longitude ? parseFloat(longitude) : null
       ]
     );
 
-    logger.info(`New incident created: ${result.rows[0].id}`);
+    logger.info(`New AI-categorized incident saved: ${result.rows[0].id}`);
 
     res.status(201).json({
-      incident: result.rows[0]
+      success: true,
+      incident: result.rows[0],
+      aiData: aiAnalysis
     });
   } catch (err) {
-    logger.error('Failed to create incident', err);
+    logger.error('Failed to create incident with AI:', err);
     res.status(500).json({
-      error: 'Failed to create incident'
+      error: 'Failed to process and report incident'
     });
   }
 });
@@ -103,35 +105,21 @@ router.put('/:id', async (req: Request, res: Response) => {
 
     const result = await query(
       `UPDATE incidents
-       SET
-         status = $1,
-         severity = $2,
-         notes = $3,
-         updated_at = NOW()
-       WHERE id = $4
-       RETURNING *`,
+       SET status = $1, severity = $2, notes = $3, updated_at = NOW()
+       WHERE id = $4 RETURNING *`,
       [status, severity, notes, id]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({
-        error: 'Incident not found'
-      });
+      return res.status(404).json({ error: 'Incident not found' });
     }
 
     logger.info(`Incident updated: ${id}`);
-
-    res.json({
-      incident: result.rows[0]
-    });
+    res.json({ incident: result.rows[0] });
   } catch (err) {
     logger.error('Failed to update incident', err);
-    res.status(500).json({
-      error: 'Failed to update incident'
-    });
+    res.status(500).json({ error: 'Failed to update incident' });
   }
 });
 
 export default router;
-
-
