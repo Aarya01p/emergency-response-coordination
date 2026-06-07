@@ -7,7 +7,7 @@ const router = Router();
 const logger = new Logger('Alerts');
 
 // GET all alerts
-router.get('/', authenticateToken, async (req: Request, res: Response) => {
+router.get('/',  async (req: Request, res: Response) => {
   try {
     const result = await query(
       'SELECT * FROM alerts ORDER BY created_at DESC LIMIT 50'
@@ -20,7 +20,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 });
 
 // CREATE alert
-router.post('/', authenticateToken, async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const { incident_id, title, message, severity, recipients } = req.body;
 
