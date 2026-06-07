@@ -15,10 +15,14 @@ const pool = new Pool({
 
 async function runMigrations() {
   try {
-    const schemaPath = path.join(__dirname, '../database/schema.sql');
+    const schemaPath = path.join(__dirname, '../../../database/schema.sql');
+
+    logger.info(`Loading schema from: ${schemaPath}`);
+
     const schema = fs.readFileSync(schemaPath, 'utf8');
 
     await pool.query(schema);
+
     logger.info('Database migrations completed successfully');
   } catch (err) {
     logger.error('Migration failed:', err);
