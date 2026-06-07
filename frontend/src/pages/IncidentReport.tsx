@@ -6,7 +6,6 @@ import {
   Button,
   Grid,
   Box,
-  MenuItem,
   Alert
 } from '@mui/material';
 
@@ -14,24 +13,14 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { api } from '../services/api';
 
+// 1. Fixed Validation Schema: Removed hidden fields that were blocking the form!
 const validationSchema = yup.object({
-  email: yup
+  title: yup
     .string()
-    .email('Enter a valid email')
-    .required('Email is required'),
-
-  password: yup
+    .required('Incident Title is required'),
+  description: yup
     .string()
-    .required('Password is required'),
-
-  type: yup
-    .string()
-    .required('Type is required'),
-
-  severity: yup
-    .string()
-    .required('Severity is required'),
-
+    .required('Description is required'),
   location: yup
     .string()
     .required('Location is required'),
@@ -47,8 +36,6 @@ const IncidentReport: React.FC = () => {
     initialValues: {
       title: '',
       description: '',
-      type: '',
-      severity: 'MEDIUM',
       location: '',
       latitude: '',
       longitude: '',
@@ -56,16 +43,20 @@ const IncidentReport: React.FC = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
-        await api.post('/incidents', values);
+        setSubmitMessage(null);
+        // 2. Pointing to your automated AI processing backend route!
+        const response = await api.post('/incidents/report', values);
+        
         setSubmitMessage({
           type: 'success',
-          text: 'Incident reported successfully!',
+          text: `Incident reported successfully! AI categorized this as a ${response.data.aiData?.category || 'reported'} event.`,
         });
         formik.resetForm();
       } catch (err) {
+        console.error('API submission failed:', err);
         setSubmitMessage({
           type: 'error',
-          text: 'Failed to report incident. Please try again.',
+          text: 'Failed to connect to the AI engine backend. Please verify your Render server is up.',
         });
       }
     },
@@ -74,7 +65,7 @@ const IncidentReport: React.FC = () => {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Paper sx={{ p: 4 }}>
-        <h2>Report New Incident</h2>
+        <h2>🚨 Report New Emergency Incident</h2>
 
         {submitMessage && (
           <Alert severity={submitMessage.type} sx={{ mb: 2 }}>
@@ -89,7 +80,7 @@ const IncidentReport: React.FC = () => {
                 fullWidth
                 id="title"
                 name="title"
-                label="Incident Title"
+                label="Incident Title (e.g., Fire in North Warehouse)"
                 value={formik.values.title}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -103,59 +94,15 @@ const IncidentReport: React.FC = () => {
                 fullWidth
                 id="description"
                 name="description"
-                label="Description"
+                label="What is happening? Describe the situation (AI will automatically analyze type and severity)"
                 multiline
-                rows={4}
+                rows={5}
                 value={formik.values.description}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={
-                  formik.touched.description &&
-                  Boolean(formik.errors.description)
-                }
-                helperText={
-                  formik.touched.description && formik.errors.description
-                }
+                error={formik.touched.description && Boolean(formik.errors.description)}
+                helperText={formik.touched.description && formik.errors.description}
               />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                id="type"
-                name="type"
-                label="Incident Type"
-                select
-                value={formik.values.type}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.type && Boolean(formik.errors.type)}
-                helperText={formik.touched.type && formik.errors.type}
-              >
-                <MenuItem value="FIRE">Fire</MenuItem>
-                <MenuItem value="MEDICAL">Medical Emergency</MenuItem>
-                <MenuItem value="ACCIDENT">Accident</MenuItem>
-                <MenuItem value="NATURAL_DISASTER">Natural Disaster</MenuItem>
-                <MenuItem value="SECURITY">Security Threat</MenuItem>
-                <MenuItem value="OTHER">Other</MenuItem>
-              </TextField>
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                id="severity"
-                name="severity"
-                label="Severity"
-                select
-                value={formik.values.severity}
-                onChange={formik.handleChange}
-              >
-                <MenuItem value="LOW">Low</MenuItem>
-                <MenuItem value="MEDIUM">Medium</MenuItem>
-                <MenuItem value="HIGH">High</MenuItem>
-                <MenuItem value="CRITICAL">Critical</MenuItem>
-              </TextField>
             </Grid>
 
             <Grid item xs={12}>
@@ -163,7 +110,7 @@ const IncidentReport: React.FC = () => {
                 fullWidth
                 id="location"
                 name="location"
-                label="Location"
+                label="Location Address"
                 value={formik.values.location}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -177,7 +124,7 @@ const IncidentReport: React.FC = () => {
                 fullWidth
                 id="latitude"
                 name="latitude"
-                label="Latitude"
+                label="Latitude (Optional)"
                 type="number"
                 value={formik.values.latitude}
                 onChange={formik.handleChange}
@@ -189,7 +136,7 @@ const IncidentReport: React.FC = () => {
                 fullWidth
                 id="longitude"
                 name="longitude"
-                label="Longitude"
+                label="Longitude (Optional)"
                 type="number"
                 value={formik.values.longitude}
                 onChange={formik.handleChange}
@@ -198,12 +145,14 @@ const IncidentReport: React.FC = () => {
 
             <Grid item xs={12}>
               <Button
-                color="primary"
+                color="error"
                 variant="contained"
                 fullWidth
                 type="submit"
+                size="large"
+                sx={{ mt: 2, fontWeight: 'bold' }}
               >
-                Report Incident
+                Send Incident to AI Dispatcher
               </Button>
             </Grid>
           </Grid>
