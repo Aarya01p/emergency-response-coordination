@@ -5,7 +5,6 @@ import * as yup from 'yup';
 import { api } from '../services/api';
 
 const validationSchema = yup.object({
-  const validationSchema = yup.object({
   email: yup
     .string() 
     .email('Enter a valid email')
