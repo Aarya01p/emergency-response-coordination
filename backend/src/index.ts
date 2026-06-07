@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
+
 import { Logger } from './utils/logger';
 import { connectDatabase } from './database/connection';
 import { errorHandler } from './middleware/errorHandler';
@@ -20,15 +21,15 @@ dotenv.config();
 const logger = new Logger('Server');
 const app: Express = express();
 const server = http.createServer(app);
+
 const io = new SocketIOServer(server, {
   cors: {
-    origin: process.env.SOCKET_IO_CORS_ORIGIN || 'http://localhost:3000',
+    origin: process.env.SOCKET_IO_CORS_ORIGIN || '*',
     methods: ['GET', 'POST'],
   },
 });
 
-const PORT = process.env.BACKEND_PORT || 5000;
-const HOST = process.env.BACKEND_HOST || 'localhost';
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(helmet());
@@ -75,9 +76,8 @@ io.on('connection', (socket) => {
 // Error Handler (must be last)
 app.use(errorHandler);
 
-// Start Server
-server.listen(PORT, () => {
-  logger.info(`Server running at http://${HOST}:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  logger.info(`Server running on port ${PORT}`);
   logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
