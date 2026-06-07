@@ -37,46 +37,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-import fs from 'fs';
-import path from 'path';
-import { Pool } from 'pg'; // Ensure Pool is imported if you are using pg directly
-
-// Create a local database runner helper
-async function initializeDatabaseSchema() {
-  try {
-    // 1. Locate and run your schema.sql file
-    const schemaPath = path.join(__dirname, '../../database/schema.sql'); // Adjust path to where your schema.sql lives relative to src/
-    if (fs.existsSync(schemaPath)) {
-      const schemaSql = fs.readFileSync(schemaPath, 'utf8');
-      
-      // Access your database client pool from your connection file or directly:
-      // await pool.query(schemaSql); 
-      logger.info('✅ Database schema loaded and tables verified.');
-    }
-
-  // 2. Automatically inject your login details right here safely!
-    const userCheck = await pool.query("SELECT * FROM users WHERE email = 'admin@emergency.com'");
-    if (userCheck.rows.length === 0) {
-      await pool.query(`
-        INSERT INTO users (email, password, full_name, role)
-        VALUES ('admin@emergency.com', 'password123', 'System Administrator', 'ADMIN')
-      `);
-      logger.info('👤 Default admin credentials created successfully!');
-    } else {
-      logger.info('👤 Default admin credentials already verified.');
-    }
-    logger.info('👤 Default admin credentials verified.');
-
-  } catch (err) {
-    logger.error('❌ Failed to initialize database schema:', err);
-  }
-}
-
 // Database Connection
 connectDatabase()
-  .then(async () => {
+  .then(() => {
     logger.info('Database connected successfully');
-    await initializeDatabaseSchema();
   })
   .catch((err) => {
     logger.error('Failed to connect to database:', err);
@@ -116,6 +80,12 @@ io.on('connection', (socket) => {
 // Error Handler (must be last)
 app.use(errorHandler);
 
+server.listen(PORT, '0.0.0.0', () => {
+  logger.info(`Server running on port ${PORT}`);
+  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+});
+
+export { app, io };
 server.listen(PORT, '0.0.0.0', () => {
   logger.info(`Server running on port ${PORT}`);
   logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
