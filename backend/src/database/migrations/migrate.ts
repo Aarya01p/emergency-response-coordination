@@ -15,7 +15,7 @@ const pool = new Pool({
 
 async function runMigrations() {
   try {
-    const schemaPath = path.join(__dirname, '../../../database/schema.sql');
+    const schemaPath = path.join(process.cwd(), 'database', 'schema.sql');
 
     logger.info(`Loading schema from: ${schemaPath}`);
 
