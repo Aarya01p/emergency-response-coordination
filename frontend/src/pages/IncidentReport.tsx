@@ -1,30 +1,32 @@
 import React, { useState } from 'react';
-import { Container, Paper, TextField, Button, Grid, Box, MenuItem, Alert } from '@mui/material';
+import {
+  Container,
+  Paper,
+  TextField,
+  Button,
+  Grid,
+  Box,
+  MenuItem,
+  Alert
+} from '@mui/material';
+
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { api } from '../services/api';
 
 const validationSchema = yup.object({
-  email: yup
-    .string() 
-    .email('Enter a valid email')
-    .required('Email is required'),
-  password: yup
-    .string() 
-    .required('Password is required'),
-  type: yup
-    .string()
-    .required('Type is required'),
-  severity: yup
-    .string()
-    .required('Severity is required'),
-  location: yup
-    .string()
-    .required('Location is required'),
+  title: yup.string().required('Title is required'),
+  description: yup.string().required('Description is required'),
+  type: yup.string().required('Type is required'),
+  severity: yup.string().required('Severity is required'),
+  location: yup.string().required('Location is required'),
 });
 
 const IncidentReport: React.FC = () => {
-  const [submitMessage, setSubmitMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [submitMessage, setSubmitMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
 
   const formik = useFormik({
     initialValues: {
@@ -40,10 +42,16 @@ const IncidentReport: React.FC = () => {
     onSubmit: async (values) => {
       try {
         await api.post('/incidents', values);
-        setSubmitMessage({ type: 'success', text: 'Incident reported successfully!' });
+        setSubmitMessage({
+          type: 'success',
+          text: 'Incident reported successfully!',
+        });
         formik.resetForm();
       } catch (err) {
-        setSubmitMessage({ type: 'error', text: 'Failed to report incident. Please try again.' });
+        setSubmitMessage({
+          type: 'error',
+          text: 'Failed to report incident. Please try again.',
+        });
       }
     },
   });
@@ -51,7 +59,7 @@ const IncidentReport: React.FC = () => {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Paper sx={{ p: 4 }}>
-        <h1>Report New Incident</h1>
+        <h2>Report New Incident</h2>
 
         {submitMessage && (
           <Alert severity={submitMessage.type} sx={{ mb: 2 }}>
@@ -86,8 +94,13 @@ const IncidentReport: React.FC = () => {
                 value={formik.values.description}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.description && Boolean(formik.errors.description)}
-                helperText={formik.touched.description && formik.errors.description}
+                error={
+                  formik.touched.description &&
+                  Boolean(formik.errors.description)
+                }
+                helperText={
+                  formik.touched.description && formik.errors.description
+                }
               />
             </Grid>
 
@@ -169,7 +182,12 @@ const IncidentReport: React.FC = () => {
             </Grid>
 
             <Grid item xs={12}>
-              <Button color="primary" variant="contained" fullWidth type="submit">
+              <Button
+                color="primary"
+                variant="contained"
+                fullWidth
+                type="submit"
+              >
                 Report Incident
               </Button>
             </Grid>
